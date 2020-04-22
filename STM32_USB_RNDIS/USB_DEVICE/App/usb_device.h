@@ -1,13 +1,12 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : usb_device.h
-  * @version        : v1.0_Cube
-  * @brief          : Header for usb_device.c file.
+  * @file           USB_Device/CDC_ECM_Standalone/USB_Device/App/usb_device.h
+  * @author         MCD Application Team
+  * @brief          Header for usb_device.c file.
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -17,7 +16,6 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __USB_DEVICE__H__
@@ -32,9 +30,6 @@
 #include "stm32f4xx_hal.h"
 #include "usbd_def.h"
 
-/* USER CODE BEGIN INCLUDE */
-
-/* USER CODE END INCLUDE */
 
 /** @addtogroup USBD_OTG_DRIVER
   * @{
@@ -51,21 +46,13 @@
   */
 
 /* Private variables ---------------------------------------------------------*/
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
 
 /*
  * -- Insert your variables declaration here --
  */
-/* USER CODE BEGIN VARIABLES */
 
-/* USER CODE END VARIABLES */
 /**
   * @}
   */
@@ -76,14 +63,12 @@
   */
 
 /** USB Device initialization function. */
-void MX_USB_DEVICE_Init(void);
+void MX_USB_Device_Init(void);
 
 /*
  * -- Insert functions declaration here --
  */
-/* USER CODE BEGIN FD */
 
-/* USER CODE END FD */
 /**
   * @}
   */

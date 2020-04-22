@@ -24,6 +24,7 @@
 #include "ethernetif.h"
 #include "usbd_cdc_rndis_if.h"
 #include <string.h>
+#include "main.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

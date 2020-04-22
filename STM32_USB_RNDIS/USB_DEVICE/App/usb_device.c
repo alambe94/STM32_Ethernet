@@ -1,13 +1,12 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file           : usb_device.c
-  * @version        : v1.0_Cube
-  * @brief          : This file implements the USB Device
+  * @file    USB_Device/CDC_ECM_Standalone/USB_Device/App/usb_device.c
+  * @author  MCD Application Team
+  * @brief   This file implements the USB Device
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -17,78 +16,41 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
 
 #include "usb_device.h"
 #include "usbd_core.h"
 #include "usbd_desc.h"
-#include "usbd_cdc.h"
-#include "usbd_cdc_if.h"
+#include "usbd_cdc_rndis.h"
+#include "usbd_cdc_rndis_if.h"
 
-/* USER CODE BEGIN Includes */
-
-/* USER CODE END Includes */
-
-/* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
-/* USER CODE END PV */
-
-/* USER CODE BEGIN PFP */
+extern USBD_HandleTypeDef USBD_Device;
 /* Private function prototypes -----------------------------------------------*/
 
-/* USER CODE END PFP */
-
+extern void Error_Handler(void);
 /* USB Device Core handle declaration. */
-USBD_HandleTypeDef hUsbDeviceFS;
-
-/*
- * -- Insert your variables declaration here --
- */
-/* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
-
-/*
- * -- Insert your external function declaration here --
- */
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
 
 /**
   * Init USB device Library, add supported class and start the library
   * @retval None
   */
-void MX_USB_DEVICE_Init(void)
+void MX_USB_Device_Init(void)
 {
-  /* USER CODE BEGIN USB_DEVICE_Init_PreTreatment */
-  
-  /* USER CODE END USB_DEVICE_Init_PreTreatment */
-  
-  /* Init Device Library, add supported class and start the library. */
-  if (USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS) != USBD_OK)
-  {
-    Error_Handler();
-  }
-  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC) != USBD_OK)
-  {
-    Error_Handler();
-  }
-  if (USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops_FS) != USBD_OK)
-  {
-    Error_Handler();
-  }
-  if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
-  {
-    Error_Handler();
-  }
 
-  /* USER CODE BEGIN USB_DEVICE_Init_PostTreatment */
-  
-  /* USER CODE END USB_DEVICE_Init_PostTreatment */
+  /* Init Device Library */
+  (void) USBD_Init(&USBD_Device, &CDC_RNDIS_Desc, 0);
+
+  /* Add Supported Class */
+  (void) USBD_RegisterClass(&USBD_Device, USBD_CDC_RNDIS_CLASS);
+
+  /* Add CDC Interface Class */
+  (void) USBD_CDC_RNDIS_RegisterInterface(&USBD_Device, &USBD_CDC_RNDIS_fops);
+
+  /* Start Device Process */
+  (void) USBD_Start(&USBD_Device);
 }
 
 /**
