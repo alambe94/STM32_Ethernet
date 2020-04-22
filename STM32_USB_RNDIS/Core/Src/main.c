@@ -48,6 +48,7 @@
 /* USER CODE BEGIN PV */
 USBD_HandleTypeDef        USBD_Device;
 struct netif              gnetif;
+__IO uint32_t LEDTimer =  LED_TIMER_LONG;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,7 +59,16 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void Toggle_Leds(void)
+{
+  static uint32_t ticks;
+  ticks++ ;
+  if(ticks >= LEDTimer)
+  {
+    HAL_GPIO_TogglePin(LED0_GPIO_Port, LED0_Pin);
+    ticks = 0;
+  }
+}
 /* USER CODE END 0 */
 
 /**
@@ -89,7 +99,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USB_Device_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -99,7 +109,7 @@ int main(void)
   while (1)
   {
     /* Background process of CDC_RNDIS class */
-
+       Toggle_Leds();
        USBD_CDC_RNDIS_fops.Process(&USBD_Device);
 
     /* USER CODE END WHILE */

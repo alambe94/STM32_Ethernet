@@ -42,7 +42,8 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+#define LED_TIMER_LONG                        0x3FFFCU
+#define LED_TIMER_SHORT             (LED_TIMER_LONG/2U)
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -54,10 +55,12 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+void Toggle_Leds(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LED0_Pin GPIO_PIN_12
+#define LED0_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

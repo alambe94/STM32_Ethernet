@@ -277,12 +277,12 @@ static void Netif_User_notification(struct netif *netif)
   if (netif_is_up(netif) == 1U)
  {
     /* Turn On LED 1 to indicate ETH and LwIP init success */
-    //BSP_LED_On(LED1);
+    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
  }
  else
   {
     /* Turn On LED 2 to indicate ETH and LwIP init error */
-    //BSP_LED_Off(LED1);
+    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
   }
 }
 
@@ -299,8 +299,8 @@ void ethernetif_notify_conn_changed(struct netif *netif)
 
   if(netif_is_link_up(netif) == 1U)
   {
-    //BSP_LED_Off(LED1);
-    //BSP_LED_On(LED1);
+    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
 
     IP_ADDR4(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
     IP_ADDR4(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
@@ -316,7 +316,7 @@ void ethernetif_notify_conn_changed(struct netif *netif)
     /*  When the netif link is down this function must be called. */
     netif_set_down(netif);
 
-    //BSP_LED_Off(LED1);
+    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
   }
 }
 

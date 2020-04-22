@@ -27,6 +27,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+extern __IO uint32_t             LEDTimer;
+
 /* Array of tags for the SSI handler */
 #define numSSItags 1
 char const *theSSItags[numSSItags] = {"tag1"};
@@ -65,8 +67,8 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
   if (iIndex==0)
   {
     /* All LEDs off, or when only one LED used, slower toggling timer value */
-    /* BSP_LED_Off(LED1); */
-    //LEDTimer = LED_TIMER_LONG;
+    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
+    LEDTimer = LED_TIMER_LONG;
 
     /* Check cgi parameter : example GET /leds.cgi?led=2&led=4 */
     for (i=0; i<(uint32_t)iNumParams; i++)
@@ -77,8 +79,8 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
         /* Switch LED1 ON if 1, or when only one LED used, faster toggling timer value */
         if(strcmp(pcValue[i], "1") ==0)
         {
-          /* BSP_LED_On(LED1); */
-          //LEDTimer = LED_TIMER_SHORT;
+          HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
+          LEDTimer = LED_TIMER_SHORT;
         }
 
       }

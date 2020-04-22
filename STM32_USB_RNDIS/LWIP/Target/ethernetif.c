@@ -273,11 +273,11 @@ void ethernetif_update_config(struct netif *netif)
 
   if(netif_is_link_up(netif) == 1U)
   {
-    //BSP_LED_On(LED1);
+    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
   }
   else
   {
-    //BSP_LED_Off(LED1);
+    HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
   }
 
   ethernetif_notify_conn_changed(netif);
