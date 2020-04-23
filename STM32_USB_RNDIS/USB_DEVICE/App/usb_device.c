@@ -37,7 +37,7 @@ extern void Error_Handler(void);
   * Init USB device Library, add supported class and start the library
   * @retval None
   */
-void MX_USB_Device_Init(void)
+void MX_USB_DEVICE_Init(void)
 {
 
   /* Init Device Library */

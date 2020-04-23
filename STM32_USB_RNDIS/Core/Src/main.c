@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usart.h"
 #include "usb_device.h"
 #include "gpio.h"
 
@@ -27,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "lwip/netif.h"
 #include "usbd_cdc_rndis_if.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,6 +71,13 @@ void Toggle_Leds(void)
     ticks = 0;
   }
 }
+
+/* redirect printf to uart */
+int __io_putchar(int ch) {
+  huart6.Instance->DR = (ch);
+  while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_TC) == 0);
+  return ch;
+}
 /* USER CODE END 0 */
 
 /**
@@ -78,6 +87,10 @@ void Toggle_Leds(void)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+  /* io buffer off*/
+  /* redirect printf to uart */
+  setvbuf(stdout, NULL, _IONBF, 0);
 
   /* USER CODE END 1 */
 
@@ -99,7 +112,8 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USB_Device_Init();
+  MX_USART6_UART_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
