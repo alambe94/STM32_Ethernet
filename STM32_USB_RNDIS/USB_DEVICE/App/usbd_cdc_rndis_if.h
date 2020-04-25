@@ -34,7 +34,7 @@
 #define IP_ADDR0                                192U
 #define IP_ADDR1                                168U
 #define IP_ADDR2                                31U
-#define IP_ADDR3                                10U
+#define IP_ADDR3                                100U
 
 /*NETMASK*/
 #define NETMASK_ADDR0                           255U
@@ -46,7 +46,7 @@
 #define GW_ADDR0                                192U
 #define GW_ADDR1                                168U
 #define GW_ADDR2                                31U
-#define GW_ADDR3                                1U
+#define GW_ADDR3                                240U
 
 /* Ensure this MAC address value is same as MAC_ADDRx declared in STM32xxx_conf.h */
 #define CDC_RNDIS_MAC_STR_DESC                 (uint8_t *)"000202030000"
