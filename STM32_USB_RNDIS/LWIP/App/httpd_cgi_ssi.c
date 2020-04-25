@@ -50,7 +50,7 @@ tCGI CGI_TAB[1];
 void myCGIinit(void)
 {
   /* Add LED control CGI to the table */
-	CGI_TAB[0] = LEDS_CGI;
+  CGI_TAB[0] = LEDS_CGI;
 
   /* Give the table to the HTTP server */
   http_set_cgi_handlers(CGI_TAB, 1);

@@ -59,8 +59,16 @@ void Toggle_Leds(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Button_Pin GPIO_PIN_0
+#define Button_GPIO_Port GPIOA
 #define LED0_Pin GPIO_PIN_12
 #define LED0_GPIO_Port GPIOD
+#define LED1_Pin GPIO_PIN_13
+#define LED1_GPIO_Port GPIOD
+#define LED2_Pin GPIO_PIN_14
+#define LED2_GPIO_Port GPIOD
+#define LED3_Pin GPIO_PIN_15
+#define LED3_GPIO_Port GPIOD
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
