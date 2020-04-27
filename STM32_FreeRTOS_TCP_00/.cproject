@@ -40,18 +40,19 @@
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.103150837" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../Core/Inc"/>
-									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/include"/>
+									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx"/>
+									<listOptionValue builtIn="false" value="../DemoTasks/include"/>
 									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc"/>
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32F4xx/Include"/>
-									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
-									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/include"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2"/>
-									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F"/>
+									<listOptionValue builtIn="false" value="../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS-Plus-TCP/include"/>
+									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F"/>
+									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+									<listOptionValue builtIn="false" value="../Core/Inc"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS-Plus-TCP/portable/Compiler/GCC"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/include"/>
-									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.194897503" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -79,15 +80,12 @@
 							<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec.1559573254" name="MCU Output Converter Motorola S-rec with symbols" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.objcopy.symbolsrec"/>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.942028160.2145011583" name="BufferAllocation_1.c" rcbsApplicability="disable" resourcePath="Middlewares/Third_Party/FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c" toolsToInvoke="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.704415125.319496789">
-						<tool id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.704415125.319496789" name="MCU GCC Compiler" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.704415125">
-							<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.691126688" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
-						</tool>
-					</fileInfo>
+					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.942028160.580758559" name="stm32f4xx_hal_eth.h" rcbsApplicability="disable" resourcePath="Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_eth.h" toolsToInvoke=""/>
 					<sourceEntries>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="DemoTasks"/>
+						<entry excluding="Third_Party/FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry excluding="Third_Party/FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
