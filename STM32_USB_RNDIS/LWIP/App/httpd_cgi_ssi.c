@@ -97,7 +97,7 @@ u16_t mySSIHandler(int iIndex, char *pcInsert, int iInsertLen)
   /* We have only one SSI handler iIndex = 0 */
   if (iIndex == 0)
   {
-    if (1U) //BSP_PB_GetState(BUTTON_TAMPER)
+    if (HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin))
     {
       char myStr1[] = " BUTTON PRESSED"; /* string to be displayed on web page */
 
