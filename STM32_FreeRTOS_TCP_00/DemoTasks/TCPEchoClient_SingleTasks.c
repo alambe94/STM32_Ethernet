@@ -183,7 +183,7 @@ static void prvEchoClientTask(void *pvParameters)
                 lStringLength = prvCreateTxData(pcTransmittedString, echoBUFFER_SIZES);
 
                 /* Add in some unique text at the front of the string. */
-                sprintf(pcTransmittedString, "TxRx message number %u", ulTxCount);
+                sprintf(pcTransmittedString, "TxRx message number %li", ulTxCount);
                 ulTxCount++;
 
                 /* Send the string to the socket. */
