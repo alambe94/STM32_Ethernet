@@ -55,7 +55,8 @@ then FreeRTOS_printf should be set to the function used to print out the
 messages. */
 #define ipconfigHAS_PRINTF			1
 #if( ipconfigHAS_PRINTF == 1 )
-	#define FreeRTOS_printf(X)	        do{}while(0)
+#include "stdio.h"
+	#define FreeRTOS_printf(X)	        printf X
 #endif
 
 /* Define the byte order of the target MCU (the MCU FreeRTOS+TCP is executing

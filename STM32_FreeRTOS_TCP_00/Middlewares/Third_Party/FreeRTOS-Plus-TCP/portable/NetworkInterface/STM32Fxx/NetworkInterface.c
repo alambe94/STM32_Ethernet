@@ -573,7 +573,7 @@ void vMACBProbePhy(void)
     ulMACPhyID = ((ulUpper << 16) & 0xFFFF0000) | (ulLower & 0xFFF0);
 
     /* The expected ID for the 'DP83848I' is 0x20005C90. */
-    FreeRTOS_printf(("PHY ID %X\n", ulMACPhyID));
+    FreeRTOS_printf(("PHY ID %lu\n", ulMACPhyID));
 
     /* Remove compiler warning if FreeRTOS_printf() is not defined. */
     (void)ulMACPhyID;
@@ -740,7 +740,7 @@ static void prvEthernetUpdateConfig(BaseType_t xForce)
     __IO uint32_t ulTimeout = 0;
     uint32_t ulRegValue = 0;
 
-    FreeRTOS_printf(("prvEthernetUpdateConfig: LS %d Force %d\n",
+    FreeRTOS_printf(("prvEthernetUpdateConfig: LS %i Force %li\n",
                      (ulPHYLinkStatus & BMSR_LINK_STATUS) != 0,
                      xForce));
 
@@ -778,7 +778,7 @@ static void prvEthernetUpdateConfig(BaseType_t xForce)
                     ulPHYLinkStatus &= ~(BMSR_LINK_STATUS);
                 }
 
-                FreeRTOS_printf((">> Autonego ready: %08x: %s duplex %u mbit %s status\n",
+                FreeRTOS_printf((">> Autonego ready: %08li: %s duplex %u mbit %s status\n",
                                  ulRegValue,
                                  (ulRegValue & PHY_DUPLEX_STATUS) ? "full" : "half",
                                  (ulRegValue & PHY_SPEED_STATUS) ? 10 : 100,
@@ -834,7 +834,7 @@ static void prvEthernetUpdateConfig(BaseType_t xForce)
         /* Restart MAC interface */
         HAL_ETH_Start(&heth);
 
-        FreeRTOS_printf(("MACCR = %08x DMABMR = %08x\n",
+        FreeRTOS_printf(("MACCR = %08li DMABMR = %08li\n",
                          heth.Instance->MACCR,
                          heth.Instance->DMABMR));
     }
