@@ -341,7 +341,7 @@ BaseType_t xNetworkInterfaceInitialise(void)
         by the peripheral. */
         heth.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
 
-        heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_MII;
+        heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
         hal_eth_init_status = HAL_ETH_Init(&heth);
 
         /* Only for inspection by debugger. */
@@ -395,7 +395,8 @@ static void prvMACAddressConfig(ETH_HandleTypeDef *heth, uint32_t ulIndex, uint8
 }
 /*-----------------------------------------------------------*/
 
-BaseType_t xNetworkInterfaceOutput(xNetworkBufferDescriptor_t *const pxDescriptor, BaseType_t bReleaseAfterSend)
+BaseType_t xNetworkInterfaceOutput(xNetworkBufferDescriptor_t *const pxDescriptor,
+	                           BaseType_t bReleaseAfterSend)
 {
     BaseType_t xReturn;
     uint32_t ulTransmitSize = 0;
@@ -522,8 +523,7 @@ static BaseType_t prvNetworkInterfaceInput(void)
                 xDMARxDescriptor = heth.RxFrameInfos.FSRxDesc;
                 ulSegCount = heth.RxFrameInfos.SegCount;
 
-                /* Set Own bit in RX descriptors: gives the buffers back to
-                DMA. */
+                /* Set Own bit in RX descriptors: gives the buffers back to DMA. */
                 while (ulSegCount != 0)
                 {
                     xDMARxDescriptor->Status |= ETH_DMARXDESC_OWN;
