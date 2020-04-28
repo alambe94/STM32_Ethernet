@@ -53,6 +53,7 @@
 									<listOptionValue builtIn="false" value="../Core/Inc"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS-Plus-TCP/portable/Compiler/GCC"/>
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/include"/>
+									<listOptionValue builtIn="false" value="../APP/UDP"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.194897503" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -85,7 +86,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="APP"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
 						<entry excluding="STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
-						<entry excluding="Third_Party/FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
+						<entry excluding="Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|Third_Party/FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
