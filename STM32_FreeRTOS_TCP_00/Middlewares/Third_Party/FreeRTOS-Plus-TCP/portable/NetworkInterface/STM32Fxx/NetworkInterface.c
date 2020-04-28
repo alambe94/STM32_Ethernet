@@ -329,7 +329,7 @@ BaseType_t xNetworkInterfaceInitialise(void)
 
         heth.Instance = ETH;
         heth.Init.AutoNegotiation = ETH_AUTONEGOTIATION_ENABLE;
-        heth.Init.Speed = ETH_SPEED_100M;
+        heth.Init.Speed = ETH_SPEED_10M;
         heth.Init.DuplexMode = ETH_MODE_FULLDUPLEX;
         heth.Init.PhyAddress = 1;
 

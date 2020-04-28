@@ -64,7 +64,7 @@
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 56 )
 #define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
-#define configTOTAL_HEAP_SIZE                    ((size_t)15360)
+#define configTOTAL_HEAP_SIZE                    ((size_t)30000)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_TRACE_FACILITY                 1
 #define configUSE_16_BIT_TICKS                   0
@@ -160,9 +160,9 @@ standard names. */
   http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/TCP_Echo_Clients.html
   http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/UDP_Echo_Clients.html */
   #define configECHO_SERVER_ADDR0	192
-  #define configECHO_SERVER_ADDR1 168
-  #define configECHO_SERVER_ADDR2 0
-  #define configECHO_SERVER_ADDR3 11
+  #define configECHO_SERVER_ADDR1       168
+  #define configECHO_SERVER_ADDR2       31
+  #define configECHO_SERVER_ADDR3       91
 
   /* Default MAC address configuration.  The demo creates a virtual network
   connection that uses this MAC address by accessing the raw Ethernet/WiFi data
@@ -178,16 +178,16 @@ standard names. */
 
   /* Default IP address configuration.  Used in ipconfigUSE_DNS is set to 0, or
   ipconfigUSE_DNS is set to 1 but a DNS server cannot be contacted. */
-  #define configIP_ADDR0		10
-  #define configIP_ADDR1		10
-  #define configIP_ADDR2		10
-  #define configIP_ADDR3		200
+  #define configIP_ADDR0		192
+  #define configIP_ADDR1		168
+  #define configIP_ADDR2		31
+  #define configIP_ADDR3		90
 
   /* Default gateway IP address configuration.  Used in ipconfigUSE_DNS is set to
   0, or ipconfigUSE_DNS is set to 1 but a DNS server cannot be contacted. */
-  #define configGATEWAY_ADDR0	10
-  #define configGATEWAY_ADDR1	10
-  #define configGATEWAY_ADDR2	10
+  #define configGATEWAY_ADDR0	192
+  #define configGATEWAY_ADDR1	168
+  #define configGATEWAY_ADDR2	31
   #define configGATEWAY_ADDR3	1
 
   /* Default DNS server configuration.  OpenDNS addresses are 208.67.222.222 and
@@ -201,8 +201,8 @@ standard names. */
   /* Default netmask configuration.  Used in ipconfigUSE_DNS is set to 0, or
   ipconfigUSE_DNS is set to 1 but a DNS server cannot be contacted. */
   #define configNET_MASK0		255
-  #define configNET_MASK1		0
-  #define configNET_MASK2		0
+  #define configNET_MASK1		255
+  #define configNET_MASK2		255
   #define configNET_MASK3		0
 
   /* The UDP port to which print messages are sent. */

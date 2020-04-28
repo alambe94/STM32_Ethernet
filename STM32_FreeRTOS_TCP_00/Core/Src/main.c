@@ -22,10 +22,12 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "eth.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,6 +60,13 @@ void MX_FREERTOS_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+/* redirect printf to uart */
+int __io_putchar(int ch) {
+  huart6.Instance->DR = (ch);
+  while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_TC) == 0);
+  return ch;
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -67,6 +76,10 @@ void MX_FREERTOS_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+  /* io buffer off*/
+  /* redirect printf to uart */
+  setvbuf(stdout, NULL, _IONBF, 0);
 
   /* USER CODE END 1 */
 
@@ -89,8 +102,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ETH_Init();
+  MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
-
+  extern void Add_TCP_IP(void);
+  Add_TCP_IP();
   /* USER CODE END 2 */
 
   /* Init scheduler */
