@@ -134,7 +134,7 @@ received on that connection.
 */
 #define mainCREATE_SIMPLE_UDP_CLIENT_SERVER_TASKS 1
 #define mainCREATE_TCP_ECHO_TASKS_SINGLE 0
-#define mainCREATE_TCP_ECHO_SERVER_TASK 0
+#define mainCREATE_TCP_ECHO_SERVER_TASK 1
 /*-----------------------------------------------------------*/
 
 /*
