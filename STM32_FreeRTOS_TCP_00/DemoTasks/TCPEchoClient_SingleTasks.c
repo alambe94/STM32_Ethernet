@@ -54,6 +54,15 @@
 /* Exclude the whole file if FreeRTOSIPConfig.h is configured to use UDP only. */
 #if (ipconfigUSE_TCP == 1)
 
+/* The address of an echo server that will be used by the two demo echo client
+ tasks.
+ http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/TCP_Echo_Clients.html
+ http://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/UDP_Echo_Clients.html */
+#define configECHO_SERVER_ADDR0	      192
+#define configECHO_SERVER_ADDR1       168
+#define configECHO_SERVER_ADDR2       31
+#define configECHO_SERVER_ADDR3       91
+
 /* The echo tasks create a socket, send out a number of echo requests, listen
 for the echo reply, then close the socket again before starting over.  This
 delay is used between each iteration to ensure the network does not get too

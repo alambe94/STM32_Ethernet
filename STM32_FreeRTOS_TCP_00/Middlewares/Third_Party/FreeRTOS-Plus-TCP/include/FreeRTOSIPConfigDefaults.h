@@ -497,7 +497,7 @@ from the FreeRTOSIPConfig.h configuration header file. */
 #endif
 
 #ifndef ipconfigDRIVER_INCLUDED_TX_IP_CHECKSUM
-	#define ipconfigDRIVER_INCLUDED_TX_IP_CHECKSUM 0
+	#define ipconfigDRIVER_INCLUDED_TX_IP_CHECKSUM 1
 #endif
 
 #ifndef ipconfigDRIVER_INCLUDED_RX_IP_CHECKSUM

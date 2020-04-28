@@ -101,7 +101,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ETH_Init();
+  //MX_ETH_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
   extern void Add_TCP_IP(void);

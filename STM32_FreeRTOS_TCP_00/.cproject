@@ -82,10 +82,10 @@
 					</folderInfo>
 					<fileInfo id="com.st.stm32cube.ide.mcu.gnu.managedbuild.config.exe.debug.942028160.580758559" name="stm32f4xx_hal_eth.h" rcbsApplicability="disable" resourcePath="Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_eth.h" toolsToInvoke=""/>
 					<sourceEntries>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="DemoTasks"/>
-						<entry excluding="Third_Party/FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="DemoTasks"/>
+						<entry excluding="STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_eth.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+						<entry excluding="Third_Party/FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|Third_Party/FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/ethernetif.c|FreeRTOS-Plus-TCP/portable/NetworkInterface/STM32Fxx/nic.c|FreeRTOS-Plus-TCP/portable/BufferManagement/BufferAllocation_1.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
