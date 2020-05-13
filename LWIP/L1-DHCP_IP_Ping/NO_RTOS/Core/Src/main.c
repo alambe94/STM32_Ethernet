@@ -92,7 +92,7 @@ int main(void)
   MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
   extern void User_App_Loop();
-  void User_App_Loop();
+  User_App_Loop();
   /* USER CODE END 2 */
 
   /* Infinite loop */

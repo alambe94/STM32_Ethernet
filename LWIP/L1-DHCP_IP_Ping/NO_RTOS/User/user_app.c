@@ -20,7 +20,7 @@ void Print_String(char *str)
   HAL_UART_Transmit(&huart6, (uint8_t *)str, len, 2000);
 }
 
-void Print_IP(unsigned int ip)
+void Print_IP(uint32_t ip)
 {
   char buff[20] = {0};
   uint8_t bytes[4];
@@ -39,6 +39,9 @@ void User_App_Loop()
 
   struct dhcp *dhcp;
 
+  Print_String("DHCP client started\n");
+  Print_String("Acquiring IP address\n");
+
   while (1)
   {
     MX_LWIP_Process();
@@ -53,19 +56,23 @@ void User_App_Loop()
       }
       else
       {
-        Print_Char('.');
-      }
-    }
-    else
-    {
-      dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
+        static uint32_t print_delay = 0;
+        print_delay++;
+        if (print_delay > 10000)
+        {
+          Print_Char('.');
+          print_delay = 0;
+        }
 
-      /* DHCP timeout */
-      if (dhcp->tries > 4)
-      {
-        /* Stop DHCP */
-        dhcp_stop(&gnetif);
-        Print_String("Could not acquire IP address. DHCP timeout\n");
+        dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
+
+        /* DHCP timeout */
+        if (dhcp->tries > 4)
+        {
+          /* Stop DHCP */
+          dhcp_stop(&gnetif);
+          Print_String("Could not acquire IP address. DHCP timeout\n");
+        }
       }
     }
   }

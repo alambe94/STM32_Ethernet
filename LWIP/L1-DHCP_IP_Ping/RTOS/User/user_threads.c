@@ -48,8 +48,6 @@ void dhcpPollTask(void *argument)
 
   for (;;)
   {
-    osDelay(100);
-
     if (got_ip_flag == 0)
     {
       if (dhcp_supplied_address(&gnetif))
@@ -60,22 +58,21 @@ void dhcpPollTask(void *argument)
       }
       else
       {
+	osDelay(100);
+
         Print_Char('.');
-      }
-    }
-    else
-    {
-      dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
 
-      /* DHCP timeout */
-      if (dhcp->tries > 4)
-      {
-        /* Stop DHCP */
-        dhcp_stop(&gnetif);
-        Print_String("Could not acquire IP address. DHCP timeout\n");
+        dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
 
-        osThreadSuspend(dhcpPollTaskHandle);
+        /* DHCP timeout */
+        if (dhcp->tries > 4)
+        {
+          /* Stop DHCP */
+          dhcp_stop(&gnetif);
+          Print_String("\nCould not acquire IP address. DHCP timeout\n");
 
+          osThreadSuspend(dhcpPollTaskHandle);
+        }
       }
     }
   }
