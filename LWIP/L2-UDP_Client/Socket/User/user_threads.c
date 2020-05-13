@@ -51,7 +51,7 @@ void Print_String(char *str)
   HAL_UART_Transmit(&huart6, (uint8_t *)str, len, 2000);
 }
 
-void Print_IP(unsigned int ip)
+void Print_IP(uint32_t ip)
 {
   char buff[20] = {0};
   uint8_t bytes[4];
