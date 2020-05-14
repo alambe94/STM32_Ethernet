@@ -70,10 +70,17 @@ err_t TCP_Client_Receive(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t 
     /* Acknowledge data reception */
     tcp_recved(tpcb, p->tot_len);
 
+    Print_String("response from server -> ");
+    Print_String((char *)p->payload);
+    Print_String("\n");
+
     pbuf_free(p);
 
     /* close connection */
     tcp_close(tpcb);
+
+    /* just to slow down spamming */
+    HAL_Delay(100);
 
     /* create new tcp client */
     TCP_Client_Create();

@@ -137,7 +137,7 @@ void tcpClientTask(void *argument)
 
     netbuf_data(rx_net_buf, &rx_data, &rx_len);
     Print_String("response from server -> ");
-    Print_String((char*)rx_data);
+    Print_String((char *)rx_data);
     Print_String("\n");
 
     Message_Sent_Count++;
