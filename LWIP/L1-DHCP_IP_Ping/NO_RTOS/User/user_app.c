@@ -71,7 +71,7 @@ void User_App_Loop()
         {
           /* Stop DHCP */
           dhcp_stop(&gnetif);
-          Print_String("Could not acquire IP address. DHCP timeout\n");
+          Print_String("\nCould not acquire IP address. DHCP timeout\n");
         }
       }
     }

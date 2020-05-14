@@ -11,7 +11,7 @@
 #define SERV_IP_ADDR0 192
 #define SERV_IP_ADDR1 168
 #define SERV_IP_ADDR2 31
-#define SERV_IP_ADDR3 117
+#define SERV_IP_ADDR3 240
 
 /* Port number of udp destination server */
 #define SERV_PORT 7
@@ -38,7 +38,7 @@ void Print_String(char *str)
   HAL_UART_Transmit(&huart6, (uint8_t *)str, len, 2000);
 }
 
-void Print_IP(unsigned int ip)
+void Print_IP(uint32_t ip)
 {
   char buff[20] = {0};
   uint8_t bytes[4];
@@ -91,7 +91,7 @@ void UDP_Client_Send(void)
 {
   struct pbuf *p;
 
-  sprintf(Message_Buffer, "sending udp client message %li", Message_Sent_Count);
+  sprintf(Message_Buffer, "sending udp client message %li\n", Message_Sent_Count);
 
   /* allocate pbuf from pool*/
   p = pbuf_alloc(PBUF_TRANSPORT, strlen(Message_Buffer), PBUF_POOL);
@@ -132,19 +132,23 @@ void User_App_Loop()
       }
       else
       {
-        Print_Char('.');
-      }
-    }
-    else
-    {
-      dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
+        static uint32_t print_delay = 0;
+        print_delay++;
+        if (print_delay > 10000)
+        {
+          Print_Char('.');
+          print_delay = 0;
+        }
 
-      /* DHCP timeout */
-      if (dhcp->tries > 4)
-      {
-        /* Stop DHCP */
-        dhcp_stop(&gnetif);
-        Print_String("Could not acquire IP address. DHCP timeout\n");
+        dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
+
+        /* DHCP timeout */
+        if (dhcp->tries > 4)
+        {
+          /* Stop DHCP */
+          dhcp_stop(&gnetif);
+          Print_String("\nCould not acquire IP address. DHCP timeout\n");
+        }
       }
     }
 
@@ -154,7 +158,7 @@ void User_App_Loop()
       static uint32_t time_stamp = 0;
 
       /* spam every 100ms */
-      if (HAL_GetTick() - time_stamp > 100)
+      if (HAL_GetTick() - time_stamp > 1000)
       {
         UDP_Client_Send();
         time_stamp = HAL_GetTick();
