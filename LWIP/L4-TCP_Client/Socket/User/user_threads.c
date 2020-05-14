@@ -9,6 +9,18 @@
 #include "lwip/api.h"
 #include "lwip/sockets.h"
 
+/* IP address of tcp destination server */
+#define SERV_IP_ADDR0 192
+#define SERV_IP_ADDR1 168
+#define SERV_IP_ADDR2 31
+#define SERV_IP_ADDR3 240
+
+/* Port number of tcp destination server */
+#define SERV_PORT 7
+
+char Message_Buffer[100];
+volatile uint32_t Message_Sent_Count = 0;
+
 extern struct netif gnetif;
 
 osThreadId_t dhcpPollTaskHandle;
@@ -18,10 +30,10 @@ const osThreadAttr_t dhcpPollTask_attributes =
         .priority = (osPriority_t)osPriorityNormal,
         .stack_size = 256};
 
-osThreadId_t udpServerTaskHandle;
-const osThreadAttr_t udpServerTask_attributes =
+osThreadId_t tcpClientTaskHandle;
+const osThreadAttr_t tcpClientTask_attributes =
     {
-        .name = "udpServerTask",
+        .name = "tcpClientTask",
         .priority = (osPriority_t)osPriorityNormal,
         .stack_size = 1024};
 
@@ -68,8 +80,8 @@ void dhcpPollTask(void *argument)
         Print_String("\ngot IP:");
         Print_IP(gnetif.ip_addr.addr);
 
-        /* notify udp thread that we acquired ip */
-        osThreadFlagsSet(udpServerTaskHandle, 0x0001U);
+        /* notify tcp thread that we acquired ip */
+        osThreadFlagsSet(tcpClientTaskHandle, 0x0001U);
       }
       else
       {
@@ -91,43 +103,65 @@ void dhcpPollTask(void *argument)
   }
 }
 
-void udpServerTask(void *argument)
+void tcpClientTask(void *argument)
 {
+  /* lwip ip structure*/
+  ip_addr_t Server_IP;
+
   int sock = -1;
-  char recv_data[100];
-  struct sockaddr_in my_addr, client_addr;
-  int recv_data_len;
-  socklen_t addrlen;
+  struct sockaddr_in addr;
+
+  char rx_data[100];
 
   /* this function is similar freertos task notification */
   /* wait until dhcp poll is complete */
   osThreadFlagsWait(0x0001U, osFlagsWaitAny, osWaitForever);
 
-  /* create new udp socket*/
-  sock = socket(AF_INET, SOCK_DGRAM, 0);
+  /* fill lwip ip structure */
+  IP4_ADDR(&Server_IP, SERV_IP_ADDR0, SERV_IP_ADDR1, SERV_IP_ADDR2, SERV_IP_ADDR3);
 
   /* fill server socket info */
-  my_addr.sin_family = AF_INET;
-  my_addr.sin_port = htons(7);
-  my_addr.sin_addr.s_addr = INADDR_ANY;
-  memset(&(my_addr.sin_zero), 0, sizeof(my_addr.sin_zero));
-
-  bind(sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(SERV_PORT);
+  addr.sin_addr.s_addr = Server_IP.addr;
+  memset(&(addr.sin_zero), 0, sizeof(addr.sin_zero));
 
   while (1)
   {
-    recv_data_len = recvfrom(sock,
-                             recv_data,
-                             sizeof(recv_data),
-                             0,
-                             (struct sockaddr *)&client_addr,
-                             &addrlen);
+    /* create new tcp socket*/
+    sock = socket(AF_INET, SOCK_STREAM, 0);
 
-    sendto(sock, recv_data,
-           recv_data_len,
-           0,
-           (struct sockaddr *)&client_addr,
-           addrlen);
+    if (sock < 0)
+    {
+      Print_String("Could not create tcp socket\n");
+      osThreadSuspend(dhcpPollTaskHandle);
+    }
+
+    /* connect to server */
+    if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+    {
+      Print_String("Connect Failed \n");
+      osThreadSuspend(dhcpPollTaskHandle);
+    }
+
+    /* format message to be sent */
+    sprintf(Message_Buffer, "sending tcp client message %lu\n", Message_Sent_Count);
+
+    /* write to server */
+    write(sock, Message_Buffer, sizeof(Message_Buffer));
+
+    /* read response from server */
+    read(sock, rx_data, sizeof(Message_Buffer));
+
+    Print_String("response from server -> ");
+    Print_String((char *)rx_data);
+    Print_String("\n");
+
+    Message_Sent_Count++;
+
+    close(sock);
+
+    osDelay(100);
   }
 }
 
@@ -136,6 +170,6 @@ void Add_User_Threads()
   /* creat a new task to check if got IP */
   dhcpPollTaskHandle = osThreadNew(dhcpPollTask, NULL, &dhcpPollTask_attributes);
 
-  /* creat a new task to handle udp server*/
-  udpServerTaskHandle = osThreadNew(udpServerTask, NULL, &udpServerTask_attributes);
+  /* creat a new task to handle tcp client*/
+  tcpClientTaskHandle = osThreadNew(tcpClientTask, NULL, &tcpClientTask_attributes);
 }
