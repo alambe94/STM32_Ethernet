@@ -7,7 +7,6 @@
 #include "string.h"
 
 #include "lwip/api.h"
-#include "lwip/sockets.h"
 
 extern struct netif gnetif;
 
@@ -23,7 +22,7 @@ const osThreadAttr_t udpServerTask_attributes =
     {
         .name = "udpServerTask",
         .priority = (osPriority_t)osPriorityNormal,
-        .stack_size = 1024};
+        .stack_size = 2096};
 
 void Print_Char(char c)
 {
@@ -93,42 +92,55 @@ void dhcpPollTask(void *argument)
 
 void udpServerTask(void *argument)
 {
-  int sock = -1;
-  char recv_data[100];
-  struct sockaddr_in my_addr, client_addr;
-  int recv_data_len;
-  socklen_t addrlen;
+  err_t err;
+  struct netconn *conn;
+  struct netbuf *buf;
+  char buffer[4096];
 
   /* this function is similar freertos task notification */
   /* wait until dhcp poll is complete */
   osThreadFlagsWait(0x0001U, osFlagsWaitAny, osWaitForever);
 
-  /* create new udp socket*/
-  sock = socket(AF_INET, SOCK_DGRAM, 0);
+  /* create new udp netconn socket*/
+  conn = netconn_new(NETCONN_UDP);
 
-  /* fill server socket info */
-  my_addr.sin_family = AF_INET;
-  my_addr.sin_port = htons(7);
-  my_addr.sin_addr.s_addr = INADDR_ANY;
-  memset(&(my_addr.sin_zero), 0, sizeof(my_addr.sin_zero));
+  err = netconn_bind(conn, IP_ADDR_ANY, 5001);
 
-  bind(sock, (struct sockaddr *)&my_addr, sizeof(struct sockaddr));
-
-  while (1)
+  if (err == ERR_OK)
   {
-    recv_data_len = recvfrom(sock,
-                             recv_data,
-                             sizeof(recv_data),
-                             0,
-                             (struct sockaddr *)&client_addr,
-                             &addrlen);
+    while (1)
+    {
+      err = netconn_recv(conn, &buf);
 
-    sendto(sock,
-           recv_data,
-           recv_data_len,
-           0,
-           (struct sockaddr *)&client_addr,
-           addrlen);
+      if (err == ERR_OK)
+      {
+        /*  no need netconn_connect here, since the netbuf contains the address */
+        if (netbuf_copy(buf, buffer, sizeof(buffer)) != buf->p->tot_len)
+        {
+          Print_String("netbuf_copy failed\n");
+        }
+        else
+        {
+          buffer[buf->p->tot_len] = '\0';
+
+          err = netconn_send(conn, buf);
+
+          if (err != ERR_OK)
+          {
+            Print_String("netconn_send failed\n");
+          }
+          else
+          {
+            Print_String(buffer);
+          }
+        }
+        netbuf_delete(buf);
+      }
+    }
+  }
+  else
+  {
+    netconn_delete(conn);
   }
 }
 
