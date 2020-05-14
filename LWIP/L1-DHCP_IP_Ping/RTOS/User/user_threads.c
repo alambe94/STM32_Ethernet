@@ -26,7 +26,7 @@ void Print_String(char *str)
   HAL_UART_Transmit(&huart6, (uint8_t *)str, len, 2000);
 }
 
-void Print_IP(unsigned int ip)
+void Print_IP(uint32_t ip)
 {
   char buff[20] = {0};
   uint8_t bytes[4];
@@ -48,6 +48,8 @@ void dhcpPollTask(void *argument)
 
   for (;;)
   {
+    osDelay(100);
+
     if (got_ip_flag == 0)
     {
       if (dhcp_supplied_address(&gnetif))
@@ -58,8 +60,6 @@ void dhcpPollTask(void *argument)
       }
       else
       {
-	osDelay(100);
-
         Print_Char('.');
 
         dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
