@@ -13,7 +13,7 @@
 #define SERV_IP_ADDR0 192
 #define SERV_IP_ADDR1 168
 #define SERV_IP_ADDR2 31
-#define SERV_IP_ADDR3 117
+#define SERV_IP_ADDR3 240
 
 /* Port number of udp destination server */
 #define SERV_PORT 7
@@ -38,7 +38,7 @@ const osThreadAttr_t udpClientTask_attributes =
     {
         .name = "udpClientTask",
         .priority = (osPriority_t)osPriorityNormal,
-        .stack_size = 256};
+        .stack_size = 1024};
 
 void Print_Char(char c)
 {
@@ -89,20 +89,18 @@ void dhcpPollTask(void *argument)
       else
       {
         Print_Char('.');
-      }
-    }
-    else
-    {
-      dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
 
-      /* DHCP timeout */
-      if (dhcp->tries > 4)
-      {
-        /* Stop DHCP */
-        dhcp_stop(&gnetif);
-        Print_String("Could not acquire IP address. DHCP timeout\n");
+        dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
 
-        osThreadSuspend(dhcpPollTaskHandle);
+        /* DHCP timeout */
+        if (dhcp->tries > 4)
+        {
+          /* Stop DHCP */
+          dhcp_stop(&gnetif);
+          Print_String("\nCould not acquire IP address. DHCP timeout\n");
+
+          osThreadSuspend(dhcpPollTaskHandle);
+        }
       }
     }
   }
@@ -131,14 +129,14 @@ void udpClientTask(void *argument)
   if (sock < 0)
   {
     Print_String("Could not create udp socket\n");
-    vTaskDelay(10);
+    osThreadSuspend(dhcpPollTaskHandle);
   }
 
   /* connect to server */
   if (connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
   {
     Print_String("Connect Failed \n");
-    vTaskDelay(10);
+    osThreadSuspend(dhcpPollTaskHandle);
   }
 
   while (1)
@@ -156,7 +154,7 @@ void udpClientTask(void *argument)
 
     Message_Sent_Count++;
 
-    osDelay(100);
+    osDelay(1000);
   }
 }
 
