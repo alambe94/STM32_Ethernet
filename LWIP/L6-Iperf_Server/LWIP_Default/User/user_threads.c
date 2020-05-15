@@ -18,6 +18,14 @@ const osThreadAttr_t dhcpPollTask_attributes =
         .priority = (osPriority_t)osPriorityNormal,
         .stack_size = 512};
 
+/* redirect printf to uart */
+int __io_putchar(int ch)
+{
+  huart6.Instance->DR = (ch);
+  while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_TC) == 0);
+  return ch;
+}
+
 void Print_Char(char c)
 {
   HAL_UART_Transmit(&huart6, (uint8_t *)&c, 1, 100);
@@ -56,8 +64,7 @@ void Iperf_Callback(void *arg, enum lwiperf_report_type report_type,
 {
   if (LWIPERF_TCP_DONE_SERVER == report_type)
   {
-    Print_String("Iperf test results\n");
-    Print_String("Client IP -> ");
+    Print_String("Iperf test results\nClient IP -> ");
     Print_IP(remote_addr->addr);
     Print_String(":");
     Print_Int(remote_port);
@@ -116,6 +123,10 @@ void dhcpPollTask(void *argument)
 
 void Add_User_Threads()
 {
+  /* io buffer off*/
+  /* redirect printf to uart */
+  setvbuf(stdout, NULL, _IONBF, 0);
+
   /* creat a new task to check if got IP */
   dhcpPollTaskHandle = osThreadNew(dhcpPollTask, NULL, &dhcpPollTask_attributes);
 }

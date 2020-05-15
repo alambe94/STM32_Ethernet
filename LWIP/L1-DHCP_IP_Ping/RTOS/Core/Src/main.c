@@ -92,8 +92,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
-  extern void Add_User_Threads();
-  Add_User_Threads();
+
   /* USER CODE END 2 */
 
   /* Init scheduler */
