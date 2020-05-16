@@ -90,12 +90,12 @@ void dhcpPollTask(void *argument)
   }
 }
 
+char buffer[4096];
 void udpServerTask(void *argument)
 {
   err_t err;
   struct netconn *conn;
   struct netbuf *buf;
-  char buffer[4096];
 
   /* this function is similar freertos task notification */
   /* wait until dhcp poll is complete */
