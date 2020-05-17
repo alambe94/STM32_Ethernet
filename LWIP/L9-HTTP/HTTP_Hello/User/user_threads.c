@@ -90,6 +90,9 @@ void dhcpPollTask(void *argument)
   }
 }
 
+char http_html_hdr[] = "HTTP/1.1 200 OK\r\nContent-type: text/html\r\n\r\n";
+char http_html_data[] = "Hello HTTP!";
+
 void tcpServerTask(void *argument)
 {
   struct netconn *conn, *newconn;
@@ -104,7 +107,7 @@ void tcpServerTask(void *argument)
 
   conn = netconn_new(NETCONN_TCP);
 
-  netconn_bind(conn, IP_ADDR_ANY, 5001);
+  netconn_bind(conn, IP_ADDR_ANY, 80);
 
   netconn_listen(conn);
 
@@ -120,7 +123,14 @@ void tcpServerTask(void *argument)
         do
         {
           netbuf_data(buf, &data, &len);
-          err = netconn_write(newconn, data, len, NETCONN_COPY);
+
+          Print_String(data);
+
+          if (strncmp((char *)data, "GET ", 4) == 0)
+          {
+              netconn_write(newconn, http_html_hdr, strlen(http_html_hdr), NETCONN_COPY);
+              netconn_write(newconn, http_html_data, strlen(http_html_data), NETCONN_COPY);
+          }
         } while (netbuf_next(buf) >= 0);
 
         netbuf_delete(buf);
