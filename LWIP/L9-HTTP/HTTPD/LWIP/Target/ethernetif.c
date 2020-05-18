@@ -20,27 +20,22 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "lwip/opt.h"
-
+#include "lwip/mem.h"
+#include "lwip/memp.h"
 #include "lwip/timeouts.h"
 #include "netif/ethernet.h"
 #include "netif/etharp.h"
 #include "lwip/ethip6.h"
 #include "ethernetif.h"
 #include <string.h>
-#include "cmsis_os.h"
-#include "lwip/tcpip.h"
+
 /* Within 'USER CODE' section, code will be kept by default at each generation */
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
 
 /* Private define ------------------------------------------------------------*/
-/* The time to block waiting for input. */
-#define TIME_WAITING_FOR_INPUT ( portMAX_DELAY )
-/* USER CODE BEGIN OS_THREAD_STACK_SIZE_WITH_RTOS */
-/* Stack size of the interface thread */
-#define INTERFACE_THREAD_STACK_SIZE ( 350 )
-/* USER CODE END OS_THREAD_STACK_SIZE_WITH_RTOS */
+
 /* Network interface name */
 #define IFNAME0 's'
 #define IFNAME1 't'
@@ -74,8 +69,6 @@ __ALIGN_BEGIN uint8_t Tx_Buff[ETH_TXBUFNB][ETH_TX_BUF_SIZE] __ALIGN_END; /* Ethe
 
 /* USER CODE END 2 */
 
-/* Semaphore to signal incoming packets */
-osSemaphoreId s_xSemaphore = NULL;
 /* Global Ethernet handle */
 ETH_HandleTypeDef heth;
 
@@ -132,7 +125,7 @@ void HAL_ETH_MspInit(ETH_HandleTypeDef* ethHandle)
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* Peripheral interrupt init */
-    HAL_NVIC_SetPriority(ETH_IRQn, 5, 0);
+    HAL_NVIC_SetPriority(ETH_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ETH_IRQn);
   /* USER CODE BEGIN ETH_MspInit 1 */
 
@@ -176,16 +169,6 @@ void HAL_ETH_MspDeInit(ETH_HandleTypeDef* ethHandle)
   }
 }
 
-/**
-  * @brief  Ethernet Rx Transfer completed callback
-  * @param  heth: ETH handle
-  * @retval None
-  */
-void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
-{
-  osSemaphoreRelease(s_xSemaphore);
-}
-
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
@@ -204,9 +187,6 @@ static void low_level_init(struct netif *netif)
 { 
   uint32_t regvalue = 0;
   HAL_StatusTypeDef hal_eth_init_status;
-/* USER CODE BEGIN OS_THREAD_ATTR_CMSIS_RTOS_V2 */
-  osThreadAttr_t attributes;
-/* USER CODE END OS_THREAD_ATTR_CMSIS_RTOS_V2 */
   
 /* Init ETH */
 
@@ -221,7 +201,7 @@ static void low_level_init(struct netif *netif)
   MACAddr[4] = 0x00;
   MACAddr[5] = 0x00;
   heth.Init.MACAddr = &MACAddr[0];
-  heth.Init.RxMode = ETH_RXINTERRUPT_MODE;
+  heth.Init.RxMode = ETH_RXPOLLING_MODE;
   heth.Init.ChecksumMode = ETH_CHECKSUM_BY_HARDWARE;
   heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
 
@@ -266,17 +246,6 @@ static void low_level_init(struct netif *netif)
     netif->flags |= NETIF_FLAG_BROADCAST;
   #endif /* LWIP_ARP */
   
-/* create a binary semaphore used for informing ethernetif of frame reception */
-  s_xSemaphore = osSemaphoreNew(1, 1, NULL);
-
-/* create the task that handles the ETH_MAC */
-/* USER CODE BEGIN OS_THREAD_NEW_CMSIS_RTOS_V2 */
-  memset(&attributes, 0x0, sizeof(osThreadAttr_t));
-  attributes.name = "EthIf";
-  attributes.stack_size = INTERFACE_THREAD_STACK_SIZE;
-  attributes.priority = osPriorityRealtime;
-  osThreadNew(ethernetif_input, netif, &attributes);
-/* USER CODE END OS_THREAD_NEW_CMSIS_RTOS_V2 */ 
   /* Enable MAC and DMA transmission and reception */
   HAL_ETH_Start(&heth);
 
@@ -420,7 +389,7 @@ static struct pbuf * low_level_input(struct netif *netif)
   
 
   /* get received frame */
-  if (HAL_ETH_GetReceivedFrame_IT(&heth) != HAL_OK)
+  if (HAL_ETH_GetReceivedFrame(&heth) != HAL_OK)
   
     return NULL;
   
@@ -496,29 +465,25 @@ static struct pbuf * low_level_input(struct netif *netif)
  *
  * @param netif the lwip network interface structure for this ethernetif
  */
-void ethernetif_input(void* argument)
+void ethernetif_input(struct netif *netif)
 {
+  err_t err;
   struct pbuf *p;
-  struct netif *netif = (struct netif *) argument;
-  
-  for( ;; )
+
+  /* move received packet into a new pbuf */
+  p = low_level_input(netif);
+    
+  /* no packet could be read, silently ignore this */
+  if (p == NULL) return;
+    
+  /* entry point to the LwIP stack */
+  err = netif->input(p, netif);
+    
+  if (err != ERR_OK)
   {
-    if (osSemaphoreAcquire(s_xSemaphore, TIME_WAITING_FOR_INPUT) == osOK)
-    {
-      do
-      {   
-        LOCK_TCPIP_CORE();
-        p = low_level_input( netif );
-        if   (p != NULL)
-        {
-          if (netif->input( p, netif) != ERR_OK )
-          {
-            pbuf_free(p);
-          }
-        }
-        UNLOCK_TCPIP_CORE();
-      } while(p!=NULL);
-    }
+    LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
+    pbuf_free(p);
+    p = NULL;    
   }
 }
 

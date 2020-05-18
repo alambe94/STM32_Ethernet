@@ -1,32 +1,18 @@
-#if 0
+
 #include "main.h"
-#include "cmsis_os.h"
 #include "lwip.h"
 #include "usart.h"
 #include "gpio.h"
 #include "string.h"
 
 #include "lwip/api.h"
-#include "http_cgi_ssi.h"
+#include "httpd.h"
 
 extern struct netif gnetif;
 
-osThreadId_t dhcpPollTaskHandle;
-const osThreadAttr_t dhcpPollTask_attributes =
-    {
-        .name = "dhcpPollTask",
-        .priority = (osPriority_t)osPriorityNormal,
-        .stack_size = 256};
-
-osThreadId_t tcpServerTaskHandle;
-const osThreadAttr_t tcpServerTask_attributes =
-    {
-        .name = "tcpServerTask",
-        .priority = (osPriority_t)osPriorityNormal,
-        .stack_size = 2096};
-
 /* redirect printf to uart */
-int __io_putchar(int ch) {
+int __io_putchar(int ch)
+{
   huart6.Instance->DR = (ch);
   while (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_TC) == 0);
   return ch;
@@ -43,6 +29,13 @@ void Print_String(char *str)
   HAL_UART_Transmit(&huart6, (uint8_t *)str, len, 2000);
 }
 
+void Print_Int(int32_t num)
+{
+  char int_to_str[10] = "";
+  itoa(num, int_to_str, 10);
+  Print_String(int_to_str);
+}
+
 void Print_IP(uint32_t ip)
 {
   char buff[20] = {0};
@@ -55,17 +48,23 @@ void Print_IP(uint32_t ip)
   HAL_UART_Transmit(&huart6, (uint8_t *)buff, strlen(buff), 1000);
 }
 
-void dhcpPollTask(void *argument)
+void User_App_Loop()
 {
+
   uint8_t got_ip_flag = 0;
+
   struct dhcp *dhcp;
 
-  printf("DHCP client started\n");
+  /* io buffer off*/
+  /* redirect printf to uart */
+  setvbuf(stdout, NULL, _IONBF, 0);
+
+  Print_String("DHCP client started\n");
   Print_String("Acquiring IP address\n");
 
-  for (;;)
+  while (1)
   {
-    osDelay(100);
+    MX_LWIP_Process();
 
     if (got_ip_flag == 0)
     {
@@ -74,11 +73,18 @@ void dhcpPollTask(void *argument)
         got_ip_flag = 1;
         Print_String("\ngot IP:");
         Print_IP(gnetif.ip_addr.addr);
-        http_server_init();
+
+        httpd_init();
       }
       else
       {
-        Print_Char('.');
+        static uint32_t print_delay = 0;
+        print_delay++;
+        if (print_delay > 10000)
+        {
+          Print_Char('.');
+          print_delay = 0;
+        }
 
         dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
 
@@ -88,22 +94,8 @@ void dhcpPollTask(void *argument)
           /* Stop DHCP */
           dhcp_stop(&gnetif);
           Print_String("\nCould not acquire IP address. DHCP timeout\n");
-
-          osThreadSuspend(dhcpPollTaskHandle);
         }
       }
     }
   }
 }
-
-
-void Add_User_Threads()
-{
-  /* io buffer off*/
-  /* redirect printf to uart */
-  setvbuf(stdout, NULL, _IONBF, 0);
-
-  /* creat a new task to check if got IP */
-  dhcpPollTaskHandle = osThreadNew(dhcpPollTask, NULL, &dhcpPollTask_attributes);
-}
-#endif
