@@ -235,7 +235,7 @@ void tftp_cleanup_rd(struct udp_pcb *upcb, tftp_connection_args *args)
 {
   /* close the USERFatFS */
   f_close(&file_SD);
-  f_mount(NULL, (TCHAR const*)"",0);
+  f_mount(NULL, USERPath,0);
   /* Free the tftp_connection_args structure reserverd for */
   mem_free(args);
 
@@ -258,7 +258,7 @@ void tftp_cleanup_wr(struct udp_pcb *upcb, tftp_connection_args *args)
 {
   /* close the USERFatFS */
   f_close(&file_CR);
-  f_mount(NULL, (TCHAR const*)"",0);
+  f_mount(NULL, USERPath,0);
   /* Free the tftp_connection_args structure reserverd for */
   mem_free(args);
 
@@ -538,7 +538,7 @@ void process_tftp_request(struct pbuf *pkt_buf, const ip_addr_t *addr, u16_t por
 
   /* bind to port 0 to receive next available free port */
   /* NOTE:  This is how TFTP works.  There is a UDP PCB for the standard port
-   * 69 which al transactions begin communication on, however all subsequent
+   * 69 which all transactions begin communication on, however all subsequent
    * transactions for a given "stream" occur on another port!  */
   err = udp_bind(upcb, IP_ADDR_ANY, 0);
   if (err != ERR_OK)
@@ -554,7 +554,7 @@ void process_tftp_request(struct pbuf *pkt_buf, const ip_addr_t *addr, u16_t por
       tftp_extract_filename(FileName, pkt_buf->payload);
 
       /* Could not open USERFatFS */
-      if(f_mount(&USERFatFS, (TCHAR const*)"", 0) != FR_OK)
+      if(f_mount(&USERFatFS, USERPath, 0) != FR_OK)
       {
         return;
       }
@@ -574,7 +574,7 @@ void process_tftp_request(struct pbuf *pkt_buf, const ip_addr_t *addr, u16_t por
       tftp_extract_filename(FileName, pkt_buf->payload);
   
       /* Could not open USERFatFS */
-      if(f_mount(&USERFatFS, (TCHAR const*)"", 0) != FR_OK)
+      if(f_mount(&USERFatFS, USERPath, 0) != FR_OK)
       {
         return;
       }
