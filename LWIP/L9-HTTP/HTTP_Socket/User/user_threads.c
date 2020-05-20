@@ -12,12 +12,6 @@
 
 extern struct netif gnetif;
 
-osThreadId_t dhcpPollTaskHandle;
-const osThreadAttr_t dhcpPollTask_attributes =
-    {
-        .name = "dhcpPollTask",
-        .priority = (osPriority_t)osPriorityNormal,
-        .stack_size = 256};
 
 void Print_Char(char c)
 {
@@ -77,7 +71,7 @@ void dhcpPollTask(void *argument)
           dhcp_stop(&gnetif);
           Print_String("\nCould not acquire IP address. DHCP timeout\n");
 
-          osThreadSuspend(dhcpPollTaskHandle);
+          osThreadSuspend(NULL);
         }
       }
     }
@@ -87,5 +81,5 @@ void dhcpPollTask(void *argument)
 void Add_User_Threads()
 {
   /* creat a new task to check if got IP */
-  dhcpPollTaskHandle = osThreadNew(dhcpPollTask, NULL, &dhcpPollTask_attributes);
+     sys_thread_new("dhcpPollTask", dhcpPollTask, NULL, 256, osPriorityNormal);
 }
