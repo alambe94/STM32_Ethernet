@@ -10,20 +10,6 @@
 
 extern struct netif gnetif;
 
-osThreadId_t dhcpPollTaskHandle;
-const osThreadAttr_t dhcpPollTask_attributes =
-    {
-        .name = "dhcpPollTask",
-        .priority = (osPriority_t)osPriorityNormal,
-        .stack_size = 256};
-
-osThreadId_t tcpServerTaskHandle;
-const osThreadAttr_t tcpServerTask_attributes =
-    {
-        .name = "tcpServerTask",
-        .priority = (osPriority_t)osPriorityNormal,
-        .stack_size = 2096};
-
 void Print_Char(char c)
 {
   HAL_UART_Transmit(&huart6, (uint8_t *)&c, 1, 100);
@@ -47,6 +33,46 @@ void Print_IP(uint32_t ip)
   HAL_UART_Transmit(&huart6, (uint8_t *)buff, strlen(buff), 1000);
 }
 
+void tcpServerTask(void *argument)
+{
+  struct netconn *conn, *newconn;
+  err_t err;
+  struct netbuf *buf;
+  void *data;
+  u16_t len;
+
+  conn = netconn_new(NETCONN_TCP);
+
+  netconn_bind(conn, IP_ADDR_ANY, 5001);
+
+  netconn_listen(conn);
+
+  while (1)
+  {
+    err = netconn_accept(conn, &newconn);
+    Print_String("connected to client\n");
+
+    if (err == ERR_OK)
+    {
+      while ((err = netconn_recv(newconn, &buf)) == ERR_OK)
+      {
+        do
+        {
+          netbuf_data(buf, &data, &len);
+          //err = netconn_write(newconn, data, len, NETCONN_NOCOPY);
+        } while (netbuf_next(buf) >= 0);
+
+        netbuf_delete(buf);
+      }
+
+      Print_String("disconnected from client\n");
+
+      netconn_close(newconn);
+      netconn_delete(newconn);
+    }
+  }
+}
+
 void dhcpPollTask(void *argument)
 {
   uint8_t got_ip_flag = 0;
@@ -67,8 +93,8 @@ void dhcpPollTask(void *argument)
         Print_String("\ngot IP:");
         Print_IP(gnetif.ip_addr.addr);
 
-        /* notify tcp thread that we acquired ip */
-        osThreadFlagsSet(tcpServerTaskHandle, 0x0001U);
+        /* creat a new task to handle tcp server*/
+        sys_thread_new("tcpServerTask", tcpServerTask, NULL, 2048, osPriorityNormal);
       }
       else
       {
@@ -83,53 +109,9 @@ void dhcpPollTask(void *argument)
           dhcp_stop(&gnetif);
           Print_String("\nCould not acquire IP address. DHCP timeout\n");
 
-          osThreadSuspend(dhcpPollTaskHandle);
+          osThreadSuspend(NULL);
         }
       }
-    }
-  }
-}
-
-void tcpServerTask(void *argument)
-{
-  struct netconn *conn, *newconn;
-  err_t err;
-  struct netbuf *buf;
-  void *data;
-  u16_t len;
-
-  /* this function is similar freertos task notification */
-  /* wait until dhcp poll is complete */
-  osThreadFlagsWait(0x0001U, osFlagsWaitAny, osWaitForever);
-
-  conn = netconn_new(NETCONN_TCP);
-
-  netconn_bind(conn, IP_ADDR_ANY, 5001);
-
-  netconn_listen(conn);
-
-  while (1)
-  {
-    err = netconn_accept(conn, &newconn);
-    Print_String("connected to client\n");
-
-    if (err == ERR_OK)
-    {
-      while ((err = netconn_recv(newconn, &buf)) == ERR_OK)
-      {
-        do
-        {
-          netbuf_data(buf, &data, &len);
-          err = netconn_write(newconn, data, len, NETCONN_COPY);
-        } while (netbuf_next(buf) >= 0);
-
-        netbuf_delete(buf);
-      }
-
-      Print_String("disconnected from client\n");
-
-      netconn_close(newconn);
-      netconn_delete(newconn);
     }
   }
 }
@@ -137,8 +119,5 @@ void tcpServerTask(void *argument)
 void Add_User_Threads()
 {
   /* creat a new task to check if got IP */
-  dhcpPollTaskHandle = osThreadNew(dhcpPollTask, NULL, &dhcpPollTask_attributes);
-
-  /* creat a new task to handle tcp server*/
-  tcpServerTaskHandle = osThreadNew(tcpServerTask, NULL, &tcpServerTask_attributes);
+  sys_thread_new("dhcpPollTask", dhcpPollTask, NULL, 256, osPriorityNormal);
 }
