@@ -24,7 +24,6 @@
 #if defined ( __CC_ARM )  /* MDK ARM Compiler */
 #include "lwip/sio.h"
 #endif /* MDK ARM Compiler */
-#include <string.h>
 
 /* USER CODE BEGIN 0 */
 

@@ -95,8 +95,7 @@ int main(void)
   Add_User_Threads();
   /* USER CODE END 2 */
 
-  /* Init scheduler */
-  osKernelInitialize();  /* Call init function for freertos objects (in freertos.c) */
+  /* Call init function for freertos objects (in freertos.c) */
   MX_FREERTOS_Init(); 
   /* Start scheduler */
   osKernelStart();

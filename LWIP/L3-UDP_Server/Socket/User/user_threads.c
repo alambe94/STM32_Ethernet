@@ -11,20 +11,6 @@
 
 extern struct netif gnetif;
 
-osThreadId_t dhcpPollTaskHandle;
-const osThreadAttr_t dhcpPollTask_attributes =
-    {
-        .name = "dhcpPollTask",
-        .priority = (osPriority_t)osPriorityNormal,
-        .stack_size = 256};
-
-osThreadId_t udpServerTaskHandle;
-const osThreadAttr_t udpServerTask_attributes =
-    {
-        .name = "udpServerTask",
-        .priority = (osPriority_t)osPriorityNormal,
-        .stack_size = 1024};
-
 void Print_Char(char c)
 {
   HAL_UART_Transmit(&huart6, (uint8_t *)&c, 1, 100);
@@ -48,49 +34,6 @@ void Print_IP(uint32_t ip)
   HAL_UART_Transmit(&huart6, (uint8_t *)buff, strlen(buff), 1000);
 }
 
-void dhcpPollTask(void *argument)
-{
-  uint8_t got_ip_flag = 0;
-  struct dhcp *dhcp;
-
-  Print_String("DHCP client started\n");
-  Print_String("Acquiring IP address\n");
-
-  for (;;)
-  {
-    osDelay(100);
-
-    if (got_ip_flag == 0)
-    {
-      if (dhcp_supplied_address(&gnetif))
-      {
-        got_ip_flag = 1;
-        Print_String("\ngot IP:");
-        Print_IP(gnetif.ip_addr.addr);
-
-        /* notify udp thread that we acquired ip */
-        osThreadFlagsSet(udpServerTaskHandle, 0x0001U);
-      }
-      else
-      {
-        Print_Char('.');
-
-        dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
-
-        /* DHCP timeout */
-        if (dhcp->tries > 4)
-        {
-          /* Stop DHCP */
-          dhcp_stop(&gnetif);
-          Print_String("\nCould not acquire IP address. DHCP timeout\n");
-
-          osThreadSuspend(dhcpPollTaskHandle);
-        }
-      }
-    }
-  }
-}
-
 void udpServerTask(void *argument)
 {
   int sock = -1;
@@ -98,10 +41,6 @@ void udpServerTask(void *argument)
   struct sockaddr_in my_addr, client_addr;
   int recv_data_len;
   socklen_t addrlen;
-
-  /* this function is similar freertos task notification */
-  /* wait until dhcp poll is complete */
-  osThreadFlagsWait(0x0001U, osFlagsWaitAny, osWaitForever);
 
   /* create new udp socket*/
   sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -132,11 +71,50 @@ void udpServerTask(void *argument)
   }
 }
 
+void dhcpPollTask(void *argument)
+{
+  uint8_t got_ip_flag = 0;
+  struct dhcp *dhcp;
+
+  Print_String("DHCP client started\n");
+  Print_String("Acquiring IP address\n");
+
+  for (;;)
+  {
+    osDelay(100);
+
+    if (got_ip_flag == 0)
+    {
+      if (dhcp_supplied_address(&gnetif))
+      {
+        got_ip_flag = 1;
+        Print_String("\ngot IP:");
+        Print_IP(gnetif.ip_addr.addr);
+
+        /* creat a new task to handle udp server*/
+        sys_thread_new("udpServerTask", udpServerTask, NULL, 1024, osPriorityNormal);
+      }
+      else
+      {
+        Print_Char('.');
+
+        dhcp = (struct dhcp *)netif_get_client_data(&gnetif, LWIP_NETIF_CLIENT_DATA_INDEX_DHCP);
+
+        /* DHCP timeout */
+        if (dhcp->tries > 4)
+        {
+          /* Stop DHCP */
+          dhcp_stop(&gnetif);
+          Print_String("\nCould not acquire IP address. DHCP timeout\n");
+          osThreadSuspend(NULL);
+        }
+      }
+    }
+  }
+}
+
 void Add_User_Threads()
 {
   /* creat a new task to check if got IP */
-  dhcpPollTaskHandle = osThreadNew(dhcpPollTask, NULL, &dhcpPollTask_attributes);
-
-  /* creat a new task to handle udp server*/
-  udpServerTaskHandle = osThreadNew(udpServerTask, NULL, &udpServerTask_attributes);
+  sys_thread_new("dhcpPollTask", dhcpPollTask, NULL, 256, osPriorityNormal);
 }
