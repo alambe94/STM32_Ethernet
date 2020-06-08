@@ -7,11 +7,8 @@
 #include "string.h"
 
 #include "lwip/api.h"
-#include "httpserver-netconn.h"
-
 
 extern struct netif gnetif;
-
 
 void Print_Char(char c)
 {
@@ -56,7 +53,6 @@ void dhcpPollTask(void *argument)
         Print_String("\ngot IP:");
         Print_IP(gnetif.ip_addr.addr);
 
-        http_server_netconn_init();
       }
       else
       {
